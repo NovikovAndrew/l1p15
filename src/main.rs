@@ -1,34 +1,31 @@
 fn quicksort<T: Ord>(arr: &mut [T]) {
-    if arr.len() <= 1 {
-        return;
+    _quicksort(arr, 0, (arr.len() - 1) as isize);
+}
+
+fn _quicksort<T: Ord>(arr: &mut [T], left: isize, right: isize) {
+    if left <= right {
+        let partition_idx = partition(arr, 0, right);
+
+        _quicksort(arr, left, partition_idx - 1);
+        _quicksort(arr, partition_idx + 1, right);
     }
-
-    let pivot_index = partition(arr);
-    let (left, right) = arr.split_at_mut(pivot_index);
-
-    // Сортировка левой части (до опорного элемента)
-    quicksort(&mut left[..pivot_index]);
-    // Сортировка правой части (после опорного элемента)
-    quicksort(&mut right[..]);
 }
 
 // Разделение массива на две части относительно опорного элемента
-fn partition<T: Ord>(arr: &mut [T]) -> usize {
-    let len = arr.len();
-    let pivot_index = len / 2;
-    let pivot_value = arr[pivot_index].clone();  // Клонируем опорное значение
-    arr.swap(pivot_index, len - 1); // Перемещаем опорный элемент в конец
-    let pivot = &arr[len - 1]; // Теперь опорный элемент находится в конце
+fn partition<T: Ord>(arr: &mut [T], left: isize, right: isize) -> isize {
+    let pivot = right;
+    let mut i: isize = left as isize - 1;
 
-    let mut i = 0;
-    for j in 0..(len - 1) {
-        if arr[j] < pivot_value { // Используем клонированное значение для сравнения
-            arr.swap(i, j);
+    for j in left..=right - 1 {
+        if arr[j as usize] <= arr[pivot as usize] {
             i += 1;
+            arr.swap(i as usize, j as usize);
         }
     }
-    arr.swap(i, len - 1); // Перемещаем опорный элемент на свое место
-    i
+
+    arr.swap((i + 1) as usize, pivot as usize);
+
+    i + 1
 }
 
 fn main() {
